@@ -1,19 +1,23 @@
 package drawing;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.example.drawingfun.R;
 
 import android.content.Context;
-import android.util.AttributeSet;
-import android.view.View;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.view.MotionEvent;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
+import android.util.AttributeSet;
 import android.util.TypedValue;
+import android.view.MotionEvent;
+import android.view.View;
+
 
 
 public class DrawingView extends View{
@@ -28,6 +32,9 @@ public class DrawingView extends View{
 	//canvas bitmap
 	private Bitmap canvasBitmap;
 	
+	private List<DrawingStroke> drawing;
+	private int strokes;
+	
 	private float brushSize, lastBrushSize;
 	private boolean erase = false;
 	
@@ -37,10 +44,12 @@ public class DrawingView extends View{
 	}
 	
 	private void setupDrawing(){
-		brushSize = getResources().getInteger(R.integer.medium_size);
+		brushSize = 20;//getResources().getInteger(R.integer.medium_size);
 		lastBrushSize = brushSize;
 		
 		//get drawing area setup for interaction
+		drawing = new ArrayList<DrawingStroke>();
+		strokes = 0;
 		drawPath = new Path();
 		drawPaint = new Paint();
 		drawPaint.setColor(paintColor);
@@ -81,7 +90,11 @@ public class DrawingView extends View{
 		    drawPath.lineTo(touchX, touchY);
 		    break;
 		case MotionEvent.ACTION_UP:
+			strokes++;
 		    drawCanvas.drawPath(drawPath, drawPaint);
+		    if(strokes < drawing.size())
+		    	drawing = drawing.subList(0, strokes - 1);
+		    drawing.add(new DrawingStroke(new Path(drawPath), new Paint(drawPaint)));
 		    drawPath.reset();
 		    break;
 		default:
@@ -129,5 +142,28 @@ public class DrawingView extends View{
 	public void startNew(){
 	    drawCanvas.drawColor(0, PorterDuff.Mode.CLEAR);
 	    invalidate();
+	}
+	
+	public void undo(){
+		if(strokes > 0)
+		{
+			strokes--;
+			drawCanvas.drawColor(0, PorterDuff.Mode.CLEAR);
+			for(int i = 0; i < strokes; i++){
+				drawCanvas.drawPath(drawing.get(i).getPath(), drawing.get(i).getPaint());
+			}
+		}
+		
+		invalidate();
+	}
+	
+	public void redo(){
+		if(strokes < drawing.size()){
+			drawCanvas.drawPath(drawing.get(strokes).getPath(), drawing.get(strokes).getPaint());
+			strokes++;
+		}
+		
+		invalidate();
+		
 	}
 }

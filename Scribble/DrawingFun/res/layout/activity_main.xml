@@ -40,11 +40,11 @@
             android:layout_weight="1"
             android:layout_gravity="center"
             android:text="@string/newCanvas"
-            android:textSize="30sp"
+            android:textSize="15sp"
             android:textColor="#FFFFFF"
             android:textStyle="bold" />
 	        
-        <TextView
+        <Button
             android:id="@+id/undo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -52,11 +52,11 @@
             android:layout_weight="1"
             android:layout_gravity="center"
             android:text="@string/undo"
-            android:textSize="30sp"
+            android:textSize="15sp"
             android:textColor="#FFFFFF"
             android:textStyle="bold" />
 	    
-        <TextView
+        <Button
             android:id="@+id/redo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -64,7 +64,7 @@
             android:layout_weight="1"
             android:layout_gravity="center"
             android:text="@string/redo"
-            android:textSize="30sp"
+            android:textSize="15sp"
             android:textColor="#FFFFFF"
             android:textStyle="bold" />
 	    
@@ -76,7 +76,7 @@
             android:layout_weight="1"
             android:layout_gravity="center"
             android:text="@string/save"
-            android:textSize="30sp"
+            android:textSize="15sp"
             android:textColor="#FFFFFF"
             android:textStyle="bold" />
         

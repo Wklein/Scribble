@@ -3,11 +3,8 @@ package drawing;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import com.example.drawingfun.R;
-
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
@@ -16,11 +13,14 @@ import android.provider.MediaStore;
 import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.drawingfun.R;
 
 public class MainActivity extends Activity implements OnClickListener {
 	
@@ -29,6 +29,7 @@ public class MainActivity extends Activity implements OnClickListener {
 	private DrawingView drawView;
 	private float smallBrush, mediumBrush, largeBrush;
 	private ImageButton currPaint, drawBtn, eraseBtn, newBtn, saveBtn;
+	private Button undoBtn, redoBtn;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -69,16 +70,16 @@ public class MainActivity extends Activity implements OnClickListener {
 		
 		//top menus
 		TextView nw = (TextView)findViewById(R.id.newDraw);
-		TextView un = (TextView)findViewById(R.id.undo);
-		TextView re = (TextView)findViewById(R.id.redo);
+		//TextView un = (TextView)findViewById(R.id.undo);
+		//TextView re = (TextView)findViewById(R.id.redo);
 		TextView sav = (TextView)findViewById(R.id.save);
 		nw.setGravity(Gravity.CENTER_HORIZONTAL);
-		un.setGravity(Gravity.CENTER_HORIZONTAL);
-		re.setGravity(Gravity.CENTER_HORIZONTAL);
+		//un.setGravity(Gravity.CENTER_HORIZONTAL);
+		//re.setGravity(Gravity.CENTER_HORIZONTAL);
 		sav.setGravity(Gravity.CENTER_HORIZONTAL);
 		nw.setOnClickListener(this);
-		un.setOnClickListener(this);
-		re.setOnClickListener(this);
+		//un.setOnClickListener(this);
+		//re.setOnClickListener(this);
 		sav.setOnClickListener(this);
 		
 		//bottom menus
@@ -105,7 +106,14 @@ public class MainActivity extends Activity implements OnClickListener {
 		
 		
 		
+		
 		drawView.setBrushSize(mediumBrush);
+		
+		undoBtn = (Button)findViewById(R.id.undo);
+		undoBtn.setOnClickListener(this);
+		
+		redoBtn = (Button)findViewById(R.id.redo);
+		redoBtn.setOnClickListener(this);
 		
 		//eraseBtn = (ImageButton)findViewById(R.id.erase_btn);
 		//eraseBtn.setOnClickListener(this);
@@ -205,6 +213,16 @@ public class MainActivity extends Activity implements OnClickListener {
 			    }
 			});
 			saveDialog.show();
+		}
+		else if(v.getId() == R.id.undo){
+			Toast.makeText(getApplicationContext(),
+	    	        "UNDO", Toast.LENGTH_SHORT).show();
+			drawView.undo();
+
+		}else if(v.getId() == R.id.redo){
+			Toast.makeText(getApplicationContext(),
+	    	        "REDO", Toast.LENGTH_SHORT).show();
+			drawView.redo();
 		}
 	}
 	
