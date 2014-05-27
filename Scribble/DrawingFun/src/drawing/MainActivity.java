@@ -1,6 +1,5 @@
 package drawing;
 
-import java.util.ArrayList;
 import java.util.UUID;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
@@ -8,20 +7,16 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.ExpandableListView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
-import android.widget.TextView;
 import android.widget.Toast;
 import com.example.drawingfun.R;
 
@@ -29,6 +24,7 @@ import com.example.drawingfun.R;
 	private Context context;
 	private DrawingView drawView;
 	private float smallBrush, mediumBrush, largeBrush;
+	private float ptsize1, ptsize2, ptsize3, ptsize4, ptsize5, ptsize6;
 	private ImageButton currPaint, drawBtn, eraseBtn;
 	private Button undoBtn, redoBtn, newBtn, saveBtn, toolBtn, shapeBtn, sizeBtn, colorBtn;
 
@@ -194,9 +190,36 @@ import com.example.drawingfun.R;
 			popup.getMenuInflater().inflate(R.menu.sizes_popup, popup.getMenu());
 			
 			popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-				public boolean onMenuItemClick(MenuItem item) {  
-					Toast.makeText(MainActivity.this,"You Clicked : " + item.getTitle(),Toast.LENGTH_SHORT).show();  
-					return true;  
+				public boolean onMenuItemClick(MenuItem item) {
+					
+					Toast.makeText(MainActivity.this,"You Clicked : " + item.getTitle(),Toast.LENGTH_SHORT).show();
+					
+					if(item.getTitle().equals("1")) {
+						ptsize1 = getResources().getInteger(R.integer.ptsize1);
+						drawView.setBrushSize(ptsize1);
+					}
+					else if(item.getTitle().equals("2")) {
+						ptsize2 = getResources().getInteger(R.integer.ptsize3);
+						drawView.setBrushSize(ptsize2);
+					}
+					else if(item.getTitle().equals("3")) {
+						ptsize3 = getResources().getInteger(R.integer.ptsize5);
+						drawView.setBrushSize(ptsize3);
+					}
+					else if(item.getTitle().equals("4")) {
+						ptsize4 = getResources().getInteger(R.integer.ptsize10);
+						drawView.setBrushSize(ptsize4);
+					}
+					else if(item.getTitle().equals("5")) {
+						ptsize5 = getResources().getInteger(R.integer.ptsize20);
+						drawView.setBrushSize(ptsize5);
+					}
+					else if(item.getTitle().equals("6")) {
+						ptsize6 = getResources().getInteger(R.integer.ptsize30);
+						drawView.setBrushSize(ptsize6);
+					}
+					
+					return true;
 				}
 			});
 			popup.show();
@@ -207,8 +230,43 @@ import com.example.drawingfun.R;
 			
 			popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
 				public boolean onMenuItemClick(MenuItem item) {  
-					Toast.makeText(MainActivity.this,"You Clicked : " + item.getTitle(),Toast.LENGTH_SHORT).show();  
-					return true;  
+					Toast.makeText(MainActivity.this,"You Clicked : " + item.getTitle(),Toast.LENGTH_SHORT).show();
+					String selectedColor;
+					
+					if (item.getTitle().equals("Black")) {
+						selectedColor = "#FF000000";
+						drawView.setColor(selectedColor);
+					}
+					else if (item.getTitle().equals("White")) {
+						selectedColor = "#FFFFFFFF";
+						drawView.setColor(selectedColor);
+					}
+					else if (item.getTitle().equals("Red")) {
+						selectedColor = "#FFFF0000";
+						drawView.setColor(selectedColor);
+					}
+					else if (item.getTitle().equals("Orange")) {
+						selectedColor = "#FFFF6600";
+						drawView.setColor(selectedColor);
+					}
+					else if (item.getTitle().equals("Yellow")) {
+						selectedColor = "#FFFFCC00";
+						drawView.setColor(selectedColor);
+					}
+					else if (item.getTitle().equals("Green")) {
+						selectedColor = "#FF009900";
+						drawView.setColor(selectedColor);
+					}
+					else if (item.getTitle().equals("Blue")) {
+						selectedColor = "#FF0000FF";
+						drawView.setColor(selectedColor);
+					}
+					else if (item.getTitle().equals("Purple")) {
+						selectedColor = "#FF990099";
+						drawView.setColor(selectedColor);
+					}
+					
+					return true;
 				}
 			});
 			popup.show();

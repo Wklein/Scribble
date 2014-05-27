@@ -7,4 +7,12 @@
 	<integer name="medium_size">20</integer>
 	<dimen name="large_brush">30dp</dimen>
 	<integer name="large_size">30</integer>
+	
+	
+	<integer name="ptsize1">1</integer>
+	<integer name="ptsize3">3</integer>
+	<integer name="ptsize5">5</integer>
+	<integer name="ptsize10">10</integer>
+	<integer name="ptsize20">20</integer>
+	<integer name="ptsize30">30</integer>
 </resources>
