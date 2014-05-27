@@ -19,4 +19,28 @@
 	<string name="sizes">Size</string>
 	<string name="color">Color</string>
 	
+	
+	<string name="useBrush">Brush</string>
+	<string name="useEraser">Eraser</string>
+	
+	<string name="rectangle">Rectangle</string>
+	<string name="circle">Circle</string>
+	<string name="line">Line</string>
+	
+	<string name="pt1">1</string>
+	<string name="pt2">2</string>
+	<string name="pt3">3</string>
+	<string name="pt4">4</string>
+	<string name="pt5">5</string>
+	<string name="pt6">6</string>
+	
+	<string name="colorBlack">Black</string>
+	<string name="colorWhite">White</string>
+	<string name="colorRed">Red</string>
+	<string name="colorOrange">Orange</string>
+	<string name="colorYellow">Yellow</string>
+	<string name="colorGreen">Green</string>
+	<string name="colorBlue">Blue</string>
+	<string name="colorPurple">Purple</string>
+	
 </resources>

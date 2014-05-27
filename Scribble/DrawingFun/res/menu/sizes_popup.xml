@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    
+    <item  
+        android:id="@+id/pt1"  
+        android:title="@string/pt1"/> 
+        
+   	<item  
+        android:id="@+id/pt2"
+        android:title="@string/pt2"/>
+   	
+   	<item  
+        android:id="@+id/pt3"
+        android:title="@string/pt3"/>
+   	
+   	<item  
+        android:id="@+id/pt4"  
+        android:title="@string/pt4"/> 
+        
+   	<item  
+        android:id="@+id/pt5"
+        android:title="@string/pt5"/>
+   	
+   	<item  
+        android:id="@+id/pt6"
+        android:title="@string/pt6"/>
+
+</menu>
