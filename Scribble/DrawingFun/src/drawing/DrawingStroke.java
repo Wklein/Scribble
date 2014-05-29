@@ -7,10 +7,20 @@ public class DrawingStroke {
 	
 	private Path path;
 	private Paint paint;
+	private DrawingView.StrokeType type;
 	
-	public DrawingStroke(Path p, Paint pa){
+	public DrawingStroke(Path p, Paint pa, DrawingView.StrokeType t){
+		type = t;
 		path = p;
 		paint = pa;
+	}
+
+	public DrawingView.StrokeType getType() {
+		return type;
+	}
+
+	public void setType(DrawingView.StrokeType type) {
+		this.type = type;
 	}
 
 	public Path getPath() {

@@ -3,16 +3,16 @@ package drawing;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.example.drawingfun.R;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.Path.Direction;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
+import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.MotionEvent;
@@ -33,10 +33,21 @@ public class DrawingView extends View{
 	private Bitmap canvasBitmap;
 	
 	private List<DrawingStroke> drawing;
+	private StrokeType type;
 	private int strokes;
+	private float[][] coords;
+	private boolean fill;
 	
 	private float brushSize, lastBrushSize;
 	private boolean erase = false;
+	
+	public enum StrokeType {
+		BRUSH,
+		RECTANGLE,
+		CIRCLE,
+		LINE;
+		
+	}
 	
 	public DrawingView(Context context, AttributeSet attrs){
 	    super(context, attrs);
@@ -48,14 +59,17 @@ public class DrawingView extends View{
 		lastBrushSize = brushSize;
 		
 		//get drawing area setup for interaction
+		coords = new float[2][2];
 		drawing = new ArrayList<DrawingStroke>();
 		strokes = 0;
+		type = StrokeType.RECTANGLE;
+		fill = true;
 		drawPath = new Path();
 		drawPaint = new Paint();
 		drawPaint.setColor(paintColor);
 		drawPaint.setAntiAlias(true);
 		drawPaint.setStrokeWidth(brushSize);
-		drawPaint.setStyle(Paint.Style.STROKE);
+		drawPaint.setStyle(Paint.Style.FILL_AND_STROKE);
 		drawPaint.setStrokeJoin(Paint.Join.ROUND);
 		drawPaint.setStrokeCap(Paint.Cap.ROUND);
 		canvasPaint = new Paint(Paint.DITHER_FLAG);
@@ -84,17 +98,18 @@ public class DrawingView extends View{
 		
 		switch (event.getAction()) {
 		case MotionEvent.ACTION_DOWN:
-		    drawPath.moveTo(touchX, touchY);
+		    downAction(touchX, touchY);
 		    break;
 		case MotionEvent.ACTION_MOVE:
-		    drawPath.lineTo(touchX, touchY);
+			moveAction(touchX, touchY);
 		    break;
 		case MotionEvent.ACTION_UP:
 			strokes++;
+			upAction(touchX, touchY);
 		    drawCanvas.drawPath(drawPath, drawPaint);
 		    if(strokes < drawing.size())
 		    	drawing = drawing.subList(0, strokes - 1);
-		    drawing.add(new DrawingStroke(new Path(drawPath), new Paint(drawPaint)));
+		    drawing.add(new DrawingStroke(new Path(drawPath), new Paint(drawPaint), null));
 		    drawPath.reset();
 		    break;
 		default:
@@ -103,6 +118,82 @@ public class DrawingView extends View{
 		
 		invalidate();
 		return true;
+	}
+	
+	public void downAction(float x, float y){
+		switch (type) {
+		case LINE:
+			coords[0][0] = x;
+			coords[0][1] = y;
+			break;
+		case RECTANGLE:
+			coords[0][0] = x;
+			coords[0][1] = y;
+			break;
+		case CIRCLE:
+			coords[0][0] = x;
+			coords[0][1] = y;
+			break;
+		case BRUSH:
+			drawPath.moveTo(x, y);
+			break;
+		}
+	}
+	
+	public void moveAction(float x, float y){
+		switch (type) {
+		case LINE:
+			drawPath.reset();
+			coords[1][0] = x;
+			coords[1][1] = y;
+			drawPath.moveTo(coords[0][0], coords[0][1]);
+			drawPath.lineTo(coords[1][0], coords[1][1]);
+			break;
+		case RECTANGLE:
+			coords[1][0] = x;
+			coords[1][1] = y;
+			drawPath.reset();
+			drawPath.addRect(Math.min(coords[0][0], coords[1][0]), Math.min(coords[0][1], coords[1][1]), Math.max(coords[0][0], coords[1][0]), Math.max(coords[0][1], coords[1][1]), Direction.CW );
+			break;
+		case CIRCLE:
+			coords[1][0] = x;
+			coords[1][1] = y;
+			RectF tmp = new RectF(Math.min(coords[0][0], coords[1][0]), Math.min(coords[0][1], coords[1][1]), Math.max(coords[0][0], coords[1][0]), Math.max(coords[0][1], coords[1][1]));
+			drawPath.reset();
+			drawPath.addOval(tmp, Direction.CW );
+			break;
+		case BRUSH:
+			drawPath.lineTo(x, y);
+			break;
+		}
+	}
+
+	public void upAction(float x, float y){
+		switch (type) {
+		case LINE:
+			drawPath.reset();
+			coords[1][0] = x;
+			coords[1][1] = y;
+			drawPath.moveTo(coords[0][0], coords[0][1]);
+			drawPath.lineTo(coords[1][0], coords[1][1]);
+			break;
+		case RECTANGLE:
+			coords[1][0] = x;
+			coords[1][1] = y;
+			drawPath.reset();
+			drawPath.addRect(Math.min(coords[0][0], coords[1][0]), Math.min(coords[0][1], coords[1][1]), Math.max(coords[0][0], coords[1][0]), Math.max(coords[0][1], coords[1][1]), Direction.CW );
+			break;
+		case CIRCLE:
+			coords[1][0] = x;
+			coords[1][1] = y;
+			RectF tmp = new RectF(Math.min(coords[0][0], coords[1][0]), Math.min(coords[0][1], coords[1][1]), Math.max(coords[0][0], coords[1][0]), Math.max(coords[0][1], coords[1][1]));
+			drawPath.reset();
+			drawPath.addOval(tmp, Direction.CW );
+			break;
+		case BRUSH:
+			drawPath.lineTo(x, y);
+			break;
+		}
 	}
 	
 	//update color
