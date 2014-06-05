@@ -45,4 +45,14 @@
 	<string name="colorBlue">Blue</string>
 	<string name="colorPurple">Purple</string>
 	
+	<string name="currSizeText">Brush Size</string>
+	<string name="okBtn">OK</string>
+	<string name="cancBtn">Cancel</string>
+	
+	<string name="redValue">RED</string>
+	<string name="greenValue">GREEN</string>
+	<string name="blueValue">BLUE</string>
+	<string name="okBtn2">OK</string>
+	<string name="cancBtn2">Cancel</string>
+	
 </resources>
