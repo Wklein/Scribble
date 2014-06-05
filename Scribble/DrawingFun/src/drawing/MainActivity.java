@@ -1,6 +1,7 @@
 package drawing;
 
 import java.util.UUID;
+
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -15,17 +16,20 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.Toast;
+
 import com.example.drawingfun.R;
 
+import drawing.DrawingView.StrokeType;
+
 @TargetApi(Build.VERSION_CODES.HONEYCOMB) public class MainActivity extends Activity implements OnClickListener {
+	@SuppressWarnings("unused")
 	private Context context;
 	private DrawingView drawView;
 	private float smallBrush, mediumBrush, largeBrush;
 	private float ptsize1, ptsize2, ptsize3, ptsize4, ptsize5, ptsize6;
-	private ImageButton currPaint, drawBtn, eraseBtn;
+	private ImageButton currPaint;
 	private Button undoBtn, redoBtn, newBtn, saveBtn, toolBtn, shapeBtn, sizeBtn, colorBtn;
 
 	@Override
@@ -36,9 +40,6 @@ import com.example.drawingfun.R;
 		drawView = (DrawingView)findViewById(R.id.drawing);
 
 		//get the palette and first color button
-		LinearLayout paintLayout = (LinearLayout)findViewById(R.id.paint_colors);
-		currPaint = (ImageButton)paintLayout.getChildAt(0);
-		currPaint.setImageDrawable(getResources().getDrawable(R.drawable.paint_pressed));
 
 		smallBrush = getResources().getInteger(R.integer.small_size);
 		mediumBrush = getResources().getInteger(R.integer.medium_size);
@@ -94,7 +95,8 @@ import com.example.drawingfun.R;
 
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB) @SuppressLint("NewApi") @Override
 	public void onClick(View v) {
-		if(v.getId() == R.id.newDraw){
+		switch(v.getId()){
+		case (R.id.newDraw):
 			//new button
 			AlertDialog.Builder newDialog = new AlertDialog.Builder(this);
 			newDialog.setTitle("New drawing");
@@ -111,9 +113,9 @@ import com.example.drawingfun.R;
 				}
 			});
 			newDialog.show();
-		}
+			break;
 
-		else if(v.getId() == R.id.save){
+		case (R.id.save):
 			//save drawing
 			AlertDialog.Builder saveDialog = new AlertDialog.Builder(this);
 			saveDialog.setTitle("Save drawing");
@@ -146,19 +148,17 @@ import com.example.drawingfun.R;
 				}
 			});
 			saveDialog.show();
-		}
-		else if(v.getId() == R.id.undo){
-			Toast.makeText(getApplicationContext(),
-					"UNDO", Toast.LENGTH_SHORT).show();
+			break;
+			
+		case (R.id.undo):
 			drawView.undo();
-
-		}
-		else if(v.getId() == R.id.redo){
-			Toast.makeText(getApplicationContext(),
-					"REDO", Toast.LENGTH_SHORT).show();
+			break;
+		
+		case (R.id.redo):
 			drawView.redo();
-		}
-		else if (v.getId() == R.id.tools) {
+			break;
+		
+		case (R.id.tools):
 			//Creating the instance of PopupMenu  
 			PopupMenu popup = new PopupMenu(MainActivity.this, toolBtn);  
 			//Inflating the Popup using xml file  
@@ -167,32 +167,73 @@ import com.example.drawingfun.R;
 			//registering popup with OnMenuItemClickListener  
 			popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
 				public boolean onMenuItemClick(MenuItem item) {  
-					Toast.makeText(MainActivity.this,"You Clicked : " + item.getTitle(),Toast.LENGTH_SHORT).show();  
+					Toast.makeText(MainActivity.this, item.getTitle(),Toast.LENGTH_SHORT).show();  
+					
+					if(item.getTitle().equals("Eraser")) {
+						drawView.setType(StrokeType.ERASER);
+						drawView.setFilled(false);
+					}
+					else if(item.getTitle().equals("Brush")) {
+						
+						drawView.setType(StrokeType.BRUSH);
+						drawView.setFilled(false);
+					}
+					
 					return true;  
 				}
 			});  
 			popup.show();//showing popup menu  
-		}
-		else if (v.getId() == R.id.shapes) {
-			PopupMenu popup = new PopupMenu(MainActivity.this, shapeBtn);
+			break;
+			
+		case (R.id.shapes):
+			popup = new PopupMenu(MainActivity.this, shapeBtn);
 			popup.getMenuInflater().inflate(R.menu.shapes_popup, popup.getMenu());
 			
 			popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-				public boolean onMenuItemClick(MenuItem item) {  
-					Toast.makeText(MainActivity.this,"You Clicked : " + item.getTitle(),Toast.LENGTH_SHORT).show();  
-					return true;  
+				public boolean onMenuItemClick(MenuItem item) {
+					
+					//Toast.makeText(MainActivity.this,item.getTitle(),Toast.LENGTH_SHORT).show();
+					
+					if(item.getTitle().equals("Rectangle")) {
+						
+						drawView.setType(StrokeType.RECTANGLE);
+						drawView.setFilled(false);
+					}
+					else if(item.getTitle().equals("Circle")) {
+						
+						drawView.setType(StrokeType.CIRCLE);
+						drawView.setFilled(false);
+					}
+					else if(item.getTitle().equals("Filled Circle")) {
+						
+						drawView.setType(StrokeType.CIRCLE);
+						drawView.setFilled(true);
+					}
+					else if(item.getTitle().equals("Filled Rectangle")) {
+						
+						drawView.setType(StrokeType.RECTANGLE);
+						drawView.setFilled(true);
+					}
+					else if(item.getTitle().equals("Line")) {
+						
+						drawView.setType(StrokeType.LINE);
+						drawView.setFilled(false);
+					}
+					
+					return true;
 				}
 			});
 			popup.show();
-		}
-		else if (v.getId() == R.id.sizes) {
-			PopupMenu popup = new PopupMenu(MainActivity.this, sizeBtn);
+			break;
+			
+		case (R.id.sizes):
+			popup = new PopupMenu(MainActivity.this, sizeBtn);
 			popup.getMenuInflater().inflate(R.menu.sizes_popup, popup.getMenu());
 			
 			popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
 				public boolean onMenuItemClick(MenuItem item) {
 					
-					Toast.makeText(MainActivity.this,"You Clicked : " + item.getTitle(),Toast.LENGTH_SHORT).show();
+					Toast.makeText(MainActivity.this,item.getTitle(),Toast.LENGTH_SHORT).show();
 					
 					if(item.getTitle().equals("1")) {
 						ptsize1 = getResources().getInteger(R.integer.ptsize1);
@@ -223,14 +264,15 @@ import com.example.drawingfun.R;
 				}
 			});
 			popup.show();
-		}
-		else if (v.getId() == R.id.colors) {
-			PopupMenu popup = new PopupMenu(MainActivity.this, colorBtn);
+			break;
+			
+		case (R.id.colors):
+			popup = new PopupMenu(MainActivity.this, colorBtn);
 			popup.getMenuInflater().inflate(R.menu.colors_popup, popup.getMenu());
 			
 			popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
 				public boolean onMenuItemClick(MenuItem item) {  
-					Toast.makeText(MainActivity.this,"You Clicked : " + item.getTitle(),Toast.LENGTH_SHORT).show();
+					Toast.makeText(MainActivity.this,item.getTitle(),Toast.LENGTH_SHORT).show();
 					String selectedColor;
 					
 					if (item.getTitle().equals("Black")) {
@@ -270,6 +312,7 @@ import com.example.drawingfun.R;
 				}
 			});
 			popup.show();
+			break;
 		}
 	}
 

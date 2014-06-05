@@ -24,9 +24,9 @@ public class DrawingView extends View{
 	//drawing path
 	private Path drawPath;
 	//drawing and canvas paint
-	private Paint drawPaint, canvasPaint;
+	private Paint drawPaint, canvasPaint, erasePaint;
 	//initial color
-	private int paintColor = 0xFF660000;
+	private int paintColor = 0xFF000000;
 	//canvas
 	private Canvas drawCanvas;
 	//canvas bitmap
@@ -36,7 +36,6 @@ public class DrawingView extends View{
 	private StrokeType type;
 	private int strokes;
 	private float[][] coords;
-	private boolean fill;
 	
 	private float brushSize, lastBrushSize;
 	private boolean erase = false;
@@ -45,7 +44,8 @@ public class DrawingView extends View{
 		BRUSH,
 		RECTANGLE,
 		CIRCLE,
-		LINE;
+		LINE,
+		ERASER;
 		
 	}
 	
@@ -62,16 +62,17 @@ public class DrawingView extends View{
 		coords = new float[2][2];
 		drawing = new ArrayList<DrawingStroke>();
 		strokes = 0;
-		type = StrokeType.RECTANGLE;
-		fill = true;
+		type = StrokeType.BRUSH;
 		drawPath = new Path();
 		drawPaint = new Paint();
 		drawPaint.setColor(paintColor);
 		drawPaint.setAntiAlias(true);
 		drawPaint.setStrokeWidth(brushSize);
-		drawPaint.setStyle(Paint.Style.FILL_AND_STROKE);
+		drawPaint.setStyle(Paint.Style.STROKE);
 		drawPaint.setStrokeJoin(Paint.Join.ROUND);
 		drawPaint.setStrokeCap(Paint.Cap.ROUND);
+		erasePaint = new Paint(drawPaint);
+		erasePaint.setColor(0xFFFFFFFF);
 		canvasPaint = new Paint(Paint.DITHER_FLAG);
 	}
 	
@@ -87,7 +88,11 @@ public class DrawingView extends View{
 	protected void onDraw(Canvas canvas) {
 		//draw view
 		canvas.drawBitmap(canvasBitmap, 0, 0, canvasPaint);
-		canvas.drawPath(drawPath, drawPaint);
+		if(type == StrokeType.ERASER){
+			canvas.drawPath(drawPath, erasePaint);
+		}else{
+			canvas.drawPath(drawPath, drawPaint);
+		}
 	}
 	
 	@Override
@@ -106,10 +111,16 @@ public class DrawingView extends View{
 		case MotionEvent.ACTION_UP:
 			strokes++;
 			upAction(touchX, touchY);
-		    drawCanvas.drawPath(drawPath, drawPaint);
+			if(type == StrokeType.ERASER){
+				Paint tmp = new Paint(drawPaint);
+				tmp.setColor(0xFFFFFFFF);
+				drawCanvas.drawPath(drawPath, tmp);
+			}else{
+				drawCanvas.drawPath(drawPath, drawPaint);
+			}
 		    if(strokes < drawing.size())
 		    	drawing = drawing.subList(0, strokes - 1);
-		    drawing.add(new DrawingStroke(new Path(drawPath), new Paint(drawPaint), null));
+		    drawing.add(new DrawingStroke(new Path(drawPath), new Paint(drawPaint), type));
 		    drawPath.reset();
 		    break;
 		default:
@@ -136,6 +147,13 @@ public class DrawingView extends View{
 			break;
 		case BRUSH:
 			drawPath.moveTo(x, y);
+			break;
+		case ERASER:
+			erasePaint = new Paint(drawPaint);
+			erasePaint.setColor(0xFFFFFFFF);
+			drawPath.moveTo(x, y);
+			break;
+		default:
 			break;
 		}
 	}
@@ -165,6 +183,11 @@ public class DrawingView extends View{
 		case BRUSH:
 			drawPath.lineTo(x, y);
 			break;
+		case ERASER:
+			drawPath.lineTo(x, y);
+			break;
+		default:
+			break;
 		}
 	}
 
@@ -192,6 +215,11 @@ public class DrawingView extends View{
 			break;
 		case BRUSH:
 			drawPath.lineTo(x, y);
+			break;
+		case ERASER:
+			drawPath.lineTo(x, y);
+			break;
+		default:
 			break;
 		}
 	}
@@ -231,6 +259,7 @@ public class DrawingView extends View{
 	}
 	
 	public void startNew(){
+		drawing = new ArrayList<DrawingStroke>();
 	    drawCanvas.drawColor(0, PorterDuff.Mode.CLEAR);
 	    invalidate();
 	}
@@ -256,5 +285,16 @@ public class DrawingView extends View{
 		
 		invalidate();
 		
+	}
+	
+	public void setType(StrokeType t){
+		type = t;
+	}
+	
+	public void setFilled(boolean t){
+		if(t)
+			drawPaint.setStyle(Paint.Style.FILL_AND_STROKE);
+		else
+			drawPaint.setStyle(Paint.Style.STROKE);
 	}
 }

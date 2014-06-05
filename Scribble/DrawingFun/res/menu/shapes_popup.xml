@@ -10,6 +10,14 @@
         android:title="@string/circle"/>
    	
    	<item  
+        android:id="@+id/RectangleF"  
+        android:title="@string/rectanglef"/> 
+        
+   	<item  
+        android:id="@+id/CircleF"
+        android:title="@string/circlef"/>
+   	
+   	<item  
         android:id="@+id/Line"
         android:title="@string/line"/>
 

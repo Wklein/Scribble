@@ -25,6 +25,8 @@
 	
 	<string name="rectangle">Rectangle</string>
 	<string name="circle">Circle</string>
+	<string name="rectanglef">Filled Rectangle</string>
+	<string name="circlef">Filled Circle</string>
 	<string name="line">Line</string>
 	
 	<string name="pt1">1</string>
