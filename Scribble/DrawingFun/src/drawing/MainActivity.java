@@ -6,17 +6,33 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.ScaleDrawable;
+import android.graphics.drawable.ShapeDrawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.PopupMenu;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.drawingfun.R;
@@ -30,7 +46,14 @@ import drawing.DrawingView.StrokeType;
 	private float smallBrush, mediumBrush, largeBrush;
 	private float ptsize1, ptsize2, ptsize3, ptsize4, ptsize5, ptsize6;
 	private ImageButton currPaint;
-	private Button undoBtn, redoBtn, newBtn, saveBtn, toolBtn, shapeBtn, sizeBtn, colorBtn;
+	private Button undoBtn, redoBtn, newBtn, saveBtn, toolBtn, shapeBtn, sizeBtn, colorBtn, emailBtn;
+	private int newBrushSize = 0, rVal = 0, gVal = 0, bVal = 0;
+	private SeekBar sizeSeek, rSeek, gSeek, bSeek;
+	private TextView currentSize, rView, gView, bView;
+	private ImageView colorPreview, sizePreview;
+	private Button okBtn, cancBtn, okBtn2, cancBtn2;
+	private Drawable sizeDrawable;
+	private ScaleDrawable sd;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +70,6 @@ import drawing.DrawingView.StrokeType;
 
 
 		drawView.setBrushSize(mediumBrush);
-
 
 		newBtn = (Button)findViewById(R.id.newDraw);
 		newBtn.setOnClickListener(this);
@@ -72,8 +94,11 @@ import drawing.DrawingView.StrokeType;
 
 		colorBtn = (Button)findViewById(R.id.colors);
 		colorBtn.setOnClickListener(this);
+		
+		emailBtn = (Button)findViewById(R.id.email);
+		emailBtn.setOnClickListener(this);
 	}
-
+	
 	//user clicked paint
 	public void paintClicked(View view){
 		//use chosen color
@@ -84,8 +109,7 @@ import drawing.DrawingView.StrokeType;
 
 		if(view!=currPaint){
 			ImageButton imgView = (ImageButton)view;
-			String color = view.getTag().toString();
-			drawView.setColor(color);
+			drawView.setColor(0xFF000000);
 			//update ui
 			imgView.setImageDrawable(getResources().getDrawable(R.drawable.paint_pressed));
 			currPaint.setImageDrawable(getResources().getDrawable(R.drawable.paint));
@@ -150,6 +174,23 @@ import drawing.DrawingView.StrokeType;
 			saveDialog.show();
 			break;
 			
+		case (R.id.email):
+			drawView.setDrawingCacheEnabled(true);
+			String imgSaved = MediaStore.Images.Media.insertImage(
+					getContentResolver(), drawView.getDrawingCache(),
+					UUID.randomUUID().toString()+".png", "drawing");
+	
+			drawView.destroyDrawingCache();
+			
+			Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND); 
+			emailIntent.setType("image/*");
+			emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT,""); 
+			emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, ""); 
+			emailIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(imgSaved));
+			startActivity(Intent.createChooser(emailIntent, "Send mail..."));
+			
+			break;
+		
 		case (R.id.undo):
 			drawView.undo();
 			break;
@@ -227,235 +268,179 @@ import drawing.DrawingView.StrokeType;
 			break;
 			
 		case (R.id.sizes):
-			popup = new PopupMenu(MainActivity.this, sizeBtn);
-			popup.getMenuInflater().inflate(R.menu.sizes_popup, popup.getMenu());
-			
-			popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-				public boolean onMenuItemClick(MenuItem item) {
-					
-					Toast.makeText(MainActivity.this,item.getTitle(),Toast.LENGTH_SHORT).show();
-					
-					if(item.getTitle().equals("1")) {
-						ptsize1 = getResources().getInteger(R.integer.ptsize1);
-						drawView.setBrushSize(ptsize1);
+				final Dialog sizeDialog = new Dialog(this);
+				sizeDialog.setTitle("BRUSH SIZE");
+				LayoutInflater inflater = (LayoutInflater)this.getSystemService(LAYOUT_INFLATER_SERVICE);
+				View sizeLayout = inflater.inflate(R.layout.size_chooser, (ViewGroup)findViewById(R.id.sizeDialogSetup));
+				sizeDialog.setContentView(sizeLayout);
+				
+				//sizePreview = (ImageView)sizeLayout.findViewById(R.id.sizePreview);
+				//sizeDrawable = (GradientDrawable)getResources().getDrawable(R.drawable.sizer);
+
+				newBrushSize = (int) drawView.getLastBrushSize();
+				sizeSeek = (SeekBar)sizeLayout.findViewById(R.id.sizeSeeker);
+				sizeSeek.setProgress((int) drawView.getLastBrushSize());
+				currentSize = (TextView)sizeLayout.findViewById(R.id.currentSize);
+				currentSize.setText("Brush Size: " + String.valueOf((int) drawView.getLastBrushSize()));
+				okBtn = (Button)sizeLayout.findViewById(R.id.okSize);
+				cancBtn = (Button)sizeLayout.findViewById(R.id.cancSize);
+				
+				OnSeekBarChangeListener yourSeekBarListener = new OnSeekBarChangeListener() {
+					@Override
+					public void onStopTrackingTouch(SeekBar seekBar) {
+						newBrushSize = seekBar.getProgress();
+						drawView.setLastBrushSize(newBrushSize);
+						//sizePreview.getDrawable().setBounds(100 - newBrushSize, 50 - newBrushSize, 100 + newBrushSize, 50 + newBrushSize);
 					}
-					else if(item.getTitle().equals("2")) {
-						ptsize2 = getResources().getInteger(R.integer.ptsize3);
-						drawView.setBrushSize(ptsize2);
+
+					@Override
+					public void onStartTrackingTouch(SeekBar seekBar) {
+						seekBar.setSecondaryProgress(seekBar.getProgress()); // set the shade of the previous value.
 					}
-					else if(item.getTitle().equals("3")) {
-						ptsize3 = getResources().getInteger(R.integer.ptsize5);
-						drawView.setBrushSize(ptsize3);
+
+					@Override
+					public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+						// change progress text label with current seekbar value
+						currentSize.setText("Brush Size: " + progress);
+						//sizePreview.getDrawable().setBounds(100 - progress, 50 - progress, 100 + progress, 50 + progress);
 					}
-					else if(item.getTitle().equals("4")) {
-						ptsize4 = getResources().getInteger(R.integer.ptsize10);
-						drawView.setBrushSize(ptsize4);
-					}
-					else if(item.getTitle().equals("5")) {
-						ptsize5 = getResources().getInteger(R.integer.ptsize20);
-						drawView.setBrushSize(ptsize5);
-					}
-					else if(item.getTitle().equals("6")) {
-						ptsize6 = getResources().getInteger(R.integer.ptsize30);
-						drawView.setBrushSize(ptsize6);
-					}
-					
-					return true;
-				}
-			});
-			popup.show();
+				};
+				sizeSeek.setOnSeekBarChangeListener(yourSeekBarListener);
+				
+				okBtn.setOnClickListener(new OnClickListener(){
+				    @Override
+				    public void onClick(View v) {
+				    	drawView.setBrushSize(newBrushSize);
+				    	Toast.makeText(MainActivity.this, "OK. " + "Brush Size: " + newBrushSize, Toast.LENGTH_SHORT).show();
+				        sizeDialog.dismiss();
+				    }
+				});
+				
+				cancBtn.setOnClickListener(new OnClickListener(){
+				    @Override
+				    public void onClick(View v) {
+				    	Toast.makeText(MainActivity.this, "CANCEL", Toast.LENGTH_SHORT).show();
+				        sizeDialog.dismiss();
+				    }
+				});
+
+				sizeDialog.show();
 			break;
 			
-		case (R.id.colors):
-			popup = new PopupMenu(MainActivity.this, colorBtn);
-			popup.getMenuInflater().inflate(R.menu.colors_popup, popup.getMenu());
-			
-			popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-				public boolean onMenuItemClick(MenuItem item) {  
-					Toast.makeText(MainActivity.this,item.getTitle(),Toast.LENGTH_SHORT).show();
-					String selectedColor;
-					
-					if (item.getTitle().equals("Black")) {
-						selectedColor = "#FF000000";
-						drawView.setColor(selectedColor);
+		case (R.id.colors):				
+				final Dialog colorDialog = new Dialog(this);
+				colorDialog.setTitle("BRUSH COLOR");
+				LayoutInflater inflater2 = (LayoutInflater)this.getSystemService(LAYOUT_INFLATER_SERVICE);
+				View colorLayout = inflater2.inflate(R.layout.color_chooser, (ViewGroup)findViewById(R.id.colorDialogSetup));
+				colorDialog.setContentView(colorLayout);
+				
+				colorPreview = (ImageView)colorLayout.findViewById(R.id.colorPreview);
+				colorPreview.setColorFilter(0xFF000000 + rVal * 65536 + gVal * 256 + bVal);
+				
+				rSeek = (SeekBar)colorLayout.findViewById(R.id.colorSeek1);
+				gSeek = (SeekBar)colorLayout.findViewById(R.id.colorSeek2);
+				bSeek = (SeekBar)colorLayout.findViewById(R.id.colorSeek3);
+				
+				rView = (TextView)colorLayout.findViewById(R.id.redC);
+				rView.setText("RED:");
+				rView.setWidth(100);
+				gView = (TextView)colorLayout.findViewById(R.id.greenC);
+				gView.setText("GREEN:");
+				gView.setWidth(100);
+				bView = (TextView)colorLayout.findViewById(R.id.blueC);
+				bView.setText("BLUE:");
+				bView.setWidth(100);
+				
+				bSeek.setProgress(bVal);
+				gSeek.setProgress(gVal);
+				rSeek.setProgress(rVal);				
+				
+				okBtn2 = (Button)colorLayout.findViewById(R.id.okColor);
+				cancBtn2 = (Button)colorLayout.findViewById(R.id.cancColor);
+				
+				
+				OnSeekBarChangeListener redSeekBarListener = new OnSeekBarChangeListener() {
+					@Override
+					public void onStopTrackingTouch(SeekBar seekBar) {
+						rVal = seekBar.getProgress();
+						drawView.setColor(0xFF000000 + rVal * 65536 + gVal * 256 + bVal);
 					}
-					else if (item.getTitle().equals("White")) {
-						selectedColor = "#FFFFFFFF";
-						drawView.setColor(selectedColor);
+
+					@Override
+					public void onStartTrackingTouch(SeekBar seekBar) {
+						seekBar.setSecondaryProgress(seekBar.getProgress());
 					}
-					else if (item.getTitle().equals("Red")) {
-						selectedColor = "#FFFF0000";
-						drawView.setColor(selectedColor);
+
+					@Override
+					public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+						rView.setText("RED: " + progress);
+						colorPreview.setColorFilter(0xFF000000 + progress * 65536 + gVal * 256 + bVal);
 					}
-					else if (item.getTitle().equals("Orange")) {
-						selectedColor = "#FFFF6600";
-						drawView.setColor(selectedColor);
+				};
+				rSeek.setOnSeekBarChangeListener(redSeekBarListener);
+				
+				
+				OnSeekBarChangeListener greenSeekBarListener = new OnSeekBarChangeListener() {
+					@Override
+					public void onStopTrackingTouch(SeekBar seekBar) {
+						gVal = seekBar.getProgress();
+						drawView.setColor(0xFF000000 + rVal * 65536 + gVal * 256 + bVal);
 					}
-					else if (item.getTitle().equals("Yellow")) {
-						selectedColor = "#FFFFCC00";
-						drawView.setColor(selectedColor);
+
+					@Override
+					public void onStartTrackingTouch(SeekBar seekBar) {
+						seekBar.setSecondaryProgress(seekBar.getProgress());
 					}
-					else if (item.getTitle().equals("Green")) {
-						selectedColor = "#FF009900";
-						drawView.setColor(selectedColor);
+
+					@Override
+					public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+						gView.setText("Green: " + progress);
+						colorPreview.setColorFilter(0xFF000000 + rVal * 65536 + progress * 256 + bVal);
 					}
-					else if (item.getTitle().equals("Blue")) {
-						selectedColor = "#FF0000FF";
-						drawView.setColor(selectedColor);
+				};
+				gSeek.setOnSeekBarChangeListener(greenSeekBarListener);
+				
+				
+				OnSeekBarChangeListener blueSeekBarListener = new OnSeekBarChangeListener() {
+					@Override
+					public void onStopTrackingTouch(SeekBar seekBar) {
+						bVal = seekBar.getProgress();
+						drawView.setColor(0xFF000000 + rVal * 65536 + gVal * 256 + bVal);
 					}
-					else if (item.getTitle().equals("Purple")) {
-						selectedColor = "#FF990099";
-						drawView.setColor(selectedColor);
+
+					@Override
+					public void onStartTrackingTouch(SeekBar seekBar) {
+						seekBar.setSecondaryProgress(seekBar.getProgress());
 					}
-					
-					return true;
-				}
-			});
-			popup.show();
+
+					@Override
+					public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+						bView.setText("Blue: " + progress);
+						colorPreview.setColorFilter(0xFF000000 + rVal * 65536 + gVal * 256 + progress);
+					}
+				};
+				bSeek.setOnSeekBarChangeListener(blueSeekBarListener);
+				
+				
+				okBtn2.setOnClickListener(new OnClickListener(){
+				    @Override
+				    public void onClick(View v) {
+				    	Toast.makeText(MainActivity.this, "OK", Toast.LENGTH_SHORT).show();
+				        colorDialog.dismiss();
+				    }
+				});
+				
+				cancBtn2.setOnClickListener(new OnClickListener(){
+				    @Override
+				    public void onClick(View v) {
+				    	Toast.makeText(MainActivity.this, "CANCEL", Toast.LENGTH_SHORT).show();
+				        colorDialog.dismiss();
+				    }
+				});
+
+				colorDialog.show();
 			break;
 		}
 	}
-
-	/*
-	@Override
-	public void onClick(View view) {
-		if(view.getId()==R.id.draw_btn){
-		    //draw button clicked			
-			//drawView.setErase(false);
-			//drawView.setBrushSize(drawView.getLastBrushSize());
-			final Dialog brushDialog = new Dialog(this);
-			brushDialog.setTitle("Brush size:");
-			brushDialog.setContentView(R.layout.brush_chooser);
-
-			ImageButton smallBtn = (ImageButton)brushDialog.findViewById(R.id.small_brush);
-			smallBtn.setOnClickListener(new OnClickListener(){
-			    @Override
-			    public void onClick(View v) {
-			        drawView.setBrushSize(smallBrush);
-			        drawView.setLastBrushSize(smallBrush);
-			        drawView.setErase(false);
-			        brushDialog.dismiss();
-			    }
-			});
-
-			ImageButton mediumBtn = (ImageButton)brushDialog.findViewById(R.id.medium_brush);
-			mediumBtn.setOnClickListener(new OnClickListener(){
-			    @Override
-			    public void onClick(View v) {
-			        drawView.setBrushSize(mediumBrush);
-			        drawView.setLastBrushSize(mediumBrush);
-			        drawView.setErase(false);
-			        brushDialog.dismiss();
-			    }
-			});
-
-			ImageButton largeBtn = (ImageButton)brushDialog.findViewById(R.id.large_brush);
-			largeBtn.setOnClickListener(new OnClickListener(){
-			    @Override
-			    public void onClick(View v) {
-			        drawView.setBrushSize(largeBrush);
-			        drawView.setLastBrushSize(largeBrush);
-			        drawView.setErase(false);
-			        brushDialog.dismiss();
-			    }
-			});
-
-			brushDialog.show();
-		}
-
-		else if(view.getId()==R.id.erase_btn){
-		    //switch to erase - choose size
-			final Dialog brushDialog = new Dialog(this);
-			brushDialog.setTitle("Eraser size:");
-			brushDialog.setContentView(R.layout.brush_chooser);
-
-			ImageButton smallBtn = (ImageButton)brushDialog.findViewById(R.id.small_brush);
-			smallBtn.setOnClickListener(new OnClickListener(){
-			    @Override
-			    public void onClick(View v) {
-			        drawView.setErase(true);
-			        drawView.setBrushSize(smallBrush);
-			        brushDialog.dismiss();
-			    }
-			});
-
-			ImageButton mediumBtn = (ImageButton)brushDialog.findViewById(R.id.medium_brush);
-			mediumBtn.setOnClickListener(new OnClickListener(){
-			    @Override
-			    public void onClick(View v) {
-			        drawView.setErase(true);
-			        drawView.setBrushSize(mediumBrush);
-			        brushDialog.dismiss();
-			    }
-			});
-
-			ImageButton largeBtn = (ImageButton)brushDialog.findViewById(R.id.large_brush);
-			largeBtn.setOnClickListener(new OnClickListener(){
-			    @Override
-			    public void onClick(View v) {
-			        drawView.setErase(true);
-			        drawView.setBrushSize(largeBrush);
-			        brushDialog.dismiss();
-			    }
-			});
-
-			brushDialog.show();
-		}
-
-		else if(view.getId()==R.id.new_btn){
-		    //new button
-			AlertDialog.Builder newDialog = new AlertDialog.Builder(this);
-			newDialog.setTitle("New drawing");
-			newDialog.setMessage("Start new drawing (you will lose the current drawing)?");
-			newDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener(){
-			    public void onClick(DialogInterface dialog, int which){
-			        drawView.startNew();
-			        dialog.dismiss();
-			    }
-			});
-			newDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener(){
-			    public void onClick(DialogInterface dialog, int which){
-			        dialog.cancel();
-			    }
-			});
-			newDialog.show();
-		}
-
-		else if(view.getId()==R.id.save_btn){
-            //save drawing
-			AlertDialog.Builder saveDialog = new AlertDialog.Builder(this);
-			saveDialog.setTitle("Save drawing");
-			saveDialog.setMessage("Save drawing to device Gallery?");
-			saveDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener(){
-			    public void onClick(DialogInterface dialog, int which){
-			        //save drawing
-			    	drawView.setDrawingCacheEnabled(true);
-			    	String imgSaved = MediaStore.Images.Media.insertImage(
-			    		    getContentResolver(), drawView.getDrawingCache(),
-			    		    UUID.randomUUID().toString()+".png", "drawing");
-
-			    	if(imgSaved!=null){
-			    	    Toast savedToast = Toast.makeText(getApplicationContext(),
-			    	        "Drawing saved to Gallery!", Toast.LENGTH_SHORT);
-			    	    savedToast.show();
-			    	}
-			    	else{
-			    	    Toast unsavedToast = Toast.makeText(getApplicationContext(),
-			    	        "Oops! Image could not be saved.", Toast.LENGTH_SHORT);
-			    	    unsavedToast.show();
-			    	}
-
-			    	drawView.destroyDrawingCache();
-			    }
-			});
-			saveDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener(){
-			    public void onClick(DialogInterface dialog, int which){
-			        dialog.cancel();
-			    }
-			});
-			saveDialog.show();
-		}
-	 */
-	//}
 
 }
