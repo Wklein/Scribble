@@ -280,6 +280,7 @@ import drawing.DrawingView.StrokeType;
 
 				newBrushSize = (int) drawView.getLastBrushSize();
 				sizeSeek = (SeekBar)sizeLayout.findViewById(R.id.sizeSeeker);
+				//initial brush value size
 				sizeSeek.setProgress(initialBrushSize);
 				currentSize = (TextView)sizeLayout.findViewById(R.id.currentSize);
 				currentSize.setText("Brush Size: " + initialBrushSize);
@@ -337,6 +338,7 @@ import drawing.DrawingView.StrokeType;
 				View colorLayout = inflater2.inflate(R.layout.color_chooser, (ViewGroup)findViewById(R.id.colorDialogSetup));
 				colorDialog.setContentView(colorLayout);
 				
+				//initial color values to keep
 				initialR = rVal;
 				initialG = gVal;
 				initialB = bVal;
