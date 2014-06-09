@@ -6,7 +6,6 @@ import java.util.List;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Path.Direction;
@@ -55,6 +54,8 @@ public class DrawingView extends View{
 	}
 	
 	private void setupDrawing(){
+		
+		
 		brushSize = 20;//getResources().getInteger(R.integer.medium_size);
 		lastBrushSize = brushSize;
 		
@@ -115,12 +116,14 @@ public class DrawingView extends View{
 				Paint tmp = new Paint(drawPaint);
 				tmp.setColor(0xFFFFFFFF);
 				drawCanvas.drawPath(drawPath, tmp);
+				drawing.add(new DrawingStroke(new Path(drawPath), new Paint(tmp), type));
 			}else{
 				drawCanvas.drawPath(drawPath, drawPaint);
+				drawing.add(new DrawingStroke(new Path(drawPath), new Paint(drawPaint), type));
 			}
 		    if(strokes < drawing.size())
 		    	drawing = drawing.subList(0, strokes - 1);
-		    drawing.add(new DrawingStroke(new Path(drawPath), new Paint(drawPaint), type));
+		    
 		    drawPath.reset();
 		    break;
 		default:
@@ -225,10 +228,13 @@ public class DrawingView extends View{
 	}
 	
 	//update color
-	public void setColor(String newColor){
+	public void setColor(int newColor){
 		invalidate();
-		paintColor = Color.parseColor(newColor);
-		drawPaint.setColor(paintColor);
+		drawPaint.setColor(newColor);
+	}
+	
+	public int getColor(){
+		return drawPaint.getColor();
 	}
 	
 	public void setBrushSize(float newSize){
@@ -260,6 +266,7 @@ public class DrawingView extends View{
 	
 	public void startNew(){
 		drawing = new ArrayList<DrawingStroke>();
+		strokes = 0;
 	    drawCanvas.drawColor(0, PorterDuff.Mode.CLEAR);
 	    invalidate();
 	}

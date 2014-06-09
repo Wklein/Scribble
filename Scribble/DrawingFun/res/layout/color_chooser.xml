@@ -3,90 +3,103 @@
     android:id="@+id/colorDialogSetup"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
-    
-        <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal" >
-	
-	    <SeekBar
-	        android:id="@+id/colorSeek1"
-	        android:layout_width="0dip"
-	        android:layout_height="wrap_content"
-	        android:layout_weight="1" />
-	            
-	    <TextView
-	        android:id="@+id/redC"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_weight="0.3"
-	        android:text="@string/redValue" />
-	
-	    </LinearLayout>
-    
-        
-        <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal" >
+    android:orientation="horizontal" >
 
-	    <SeekBar
-	        android:id="@+id/colorSeek2"
-	        android:layout_width="0dip"
-	        android:layout_height="wrap_content"
-	        android:layout_weight="1" />
-	            
-	    <TextView
-	        android:id="@+id/greenC"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_weight="0.3"
-	        android:text="@string/greenValue" />
-	
-	    </LinearLayout>
-    
-        
-        <LinearLayout
-        android:layout_width="match_parent"
+    <LinearLayout
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal" >
+        android:layout_weight=".8"
+        android:orientation="vertical" >
 
-	    <SeekBar
-	        android:id="@+id/colorSeek3"
-	        android:layout_width="0dip"
-	        android:layout_height="wrap_content"
-	        android:layout_weight="1" />
-	            
-	    <TextView
-	        android:id="@+id/blueC"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_weight="0.3"
-	        android:text="@string/blueValue" />
-	
-	    </LinearLayout>
-    
-        
         <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal" >
-
-        <Button
-            android:id="@+id/okColor"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/okBtn2" />
+            android:orientation="horizontal" >
 
-        <Button
-            android:id="@+id/cancColor"
-            android:layout_width="fill_parent"
+            <SeekBar
+                android:id="@+id/colorSeek1"
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:max="255"  />
+
+            <TextView
+                android:id="@+id/redC"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.3"
+                android:text="@string/redValue" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/cancBtn2" />
+            android:orientation="horizontal" >
 
+            <SeekBar
+                android:id="@+id/colorSeek2"
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:max="255"  />
+
+            <TextView
+                android:id="@+id/greenC"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.3"
+                android:text="@string/greenValue" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <SeekBar
+                android:id="@+id/colorSeek3"
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:max="255" />
+
+            <TextView
+                android:id="@+id/blueC"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.3"
+                android:text="@string/blueValue" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <Button
+                android:id="@+id/okColor"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/okBtn2" />
+
+            <Button
+                android:id="@+id/cancColor"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/cancBtn2" />
+        </LinearLayout>
     </LinearLayout>
+
+    <ImageView
+        android:id="@+id/colorPreview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="50dp"
+        android:layout_marginTop="50dp"
+        android:layout_weight=".2"
+        android:contentDescription="@string/okBtn2"
+        android:src="@drawable/large" />
 
 </LinearLayout>
