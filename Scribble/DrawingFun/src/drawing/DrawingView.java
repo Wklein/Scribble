@@ -111,6 +111,8 @@ public class DrawingView extends View{
 		    break;
 		case MotionEvent.ACTION_UP:
 			strokes++;
+			if(strokes < drawing.size())
+		    	drawing = drawing.subList(0, strokes - 1);
 			upAction(touchX, touchY);
 			if(type == StrokeType.ERASER){
 				Paint tmp = new Paint(drawPaint);
@@ -121,8 +123,6 @@ public class DrawingView extends View{
 				drawCanvas.drawPath(drawPath, drawPaint);
 				drawing.add(new DrawingStroke(new Path(drawPath), new Paint(drawPaint), type));
 			}
-		    if(strokes < drawing.size())
-		    	drawing = drawing.subList(0, strokes - 1);
 		    
 		    drawPath.reset();
 		    break;
