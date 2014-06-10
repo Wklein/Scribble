@@ -7,16 +7,8 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Configuration;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.ScaleDrawable;
-import android.graphics.drawable.ShapeDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -40,20 +32,15 @@ import com.example.drawingfun.R;
 import drawing.DrawingView.StrokeType;
 
 @TargetApi(Build.VERSION_CODES.HONEYCOMB) public class MainActivity extends Activity implements OnClickListener {
-	@SuppressWarnings("unused")
-	private Context context;
 	private DrawingView drawView;
-	private float smallBrush, mediumBrush, largeBrush;
-	private float ptsize1, ptsize2, ptsize3, ptsize4, ptsize5, ptsize6;
+	private float mediumBrush;
 	private ImageButton currPaint;
 	private Button undoBtn, redoBtn, newBtn, saveBtn, toolBtn, shapeBtn, sizeBtn, colorBtn, emailBtn;
 	private int newBrushSize = 0, rVal = 0, gVal = 0, bVal = 0;
 	private SeekBar sizeSeek, rSeek, gSeek, bSeek;
 	private TextView currentSize, rView, gView, bView;
-	private ImageView colorPreview, sizePreview;
+	private ImageView colorPreview;
 	private Button okBtn, cancBtn, okBtn2, cancBtn2;
-	private Drawable sizeDrawable;
-	private ScaleDrawable sd;
 	private int initialBrushSize = 20, initialR = 0, initialG = 0, initialB = 0;
 
 	@Override
@@ -65,9 +52,8 @@ import drawing.DrawingView.StrokeType;
 
 		//get the palette and first color button
 
-		smallBrush = getResources().getInteger(R.integer.small_size);
 		mediumBrush = getResources().getInteger(R.integer.medium_size);
-		largeBrush = getResources().getInteger(R.integer.large_size);
+		getResources().getInteger(R.integer.large_size);
 
 
 		drawView.setBrushSize(mediumBrush);
