@@ -27,7 +27,7 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.drawingfun.R;
+import developer.drawingfun.R;
 
 import drawing.DrawingView.StrokeType;
 
