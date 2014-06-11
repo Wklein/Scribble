@@ -110,9 +110,12 @@ public class DrawingView extends View{
 			moveAction(touchX, touchY);
 		    break;
 		case MotionEvent.ACTION_UP:
-			strokes++;
+			
 			if(strokes < drawing.size())
-		    	drawing = drawing.subList(0, strokes - 1);
+		    	drawing = drawing.subList(0, strokes);
+			
+			strokes++;
+			
 			upAction(touchX, touchY);
 			if(type == StrokeType.ERASER){
 				Paint tmp = new Paint(drawPaint);
